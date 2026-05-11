@@ -232,11 +232,11 @@ public class OtpVerificationPage extends javax.swing.JFrame {
                 //open dashboard based on the user
                 
                 if(loggedInUser.getRole().equals("ADMIN")){
-                    new DashboardPage(loggedInUser).setVisible(true);
+                    new AdminDashboard(loggedInUser).setVisible(true);
                 }else if(loggedInUser.getRole().equals("SME")){
-                    new DashboardPage(loggedInUser).setVisible(true);
+                    new SmeDashboard(loggedInUser).setVisible(true);
                 }else if(loggedInUser.getRole().equals("INVESTOR")){
-                    new DashboardPage(loggedInUser).setVisible(true);
+                    new InvestorDashboard(loggedInUser).setVisible(true);
                 }
                 this.dispose();
             }else{
