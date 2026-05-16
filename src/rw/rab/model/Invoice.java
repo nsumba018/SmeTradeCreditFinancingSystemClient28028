@@ -19,19 +19,24 @@ public class Invoice implements Serializable{
     private String status;
     private Date issueDate;
     private Date dueDate;
-  
+    // Client Invoice.java — no annotations, just the field
+    private Sme sme;
+
 
     public Invoice() {
     }
 
-    public Invoice(int invoiceId, String invoiceNumber, double amount, String status, Date issueDate, Date dueDate, Sme sme, List<Funding> fundings) {
+    public Invoice(int invoiceId, String invoiceNumber, double amount, String status, Date issueDate, Date dueDate, Sme sme) {
         this.invoiceId = invoiceId;
         this.invoiceNumber = invoiceNumber;
         this.amount = amount;
         this.status = status;
         this.issueDate = issueDate;
         this.dueDate = dueDate;
-       }
+        this.sme = sme;
+    }
+
+    
 
     
     
@@ -92,6 +97,12 @@ public class Invoice implements Serializable{
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
     }
-    
+    public Sme getSme() {
+    return sme;
+    }
+
+    public void setSme(Sme sme) {
+        this.sme = sme;
+    }
     
 }

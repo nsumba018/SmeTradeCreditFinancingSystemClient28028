@@ -5,6 +5,14 @@
  */
 package rw.rab.view;
 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import rw.rab.model.Invoice;
+import rw.rab.service.InvoiceService;
+
 /**
  *
  * @author nsumba
@@ -14,9 +22,50 @@ public class InvoiceManagement extends javax.swing.JFrame {
     /**
      * Creates new form UserManagement
      */
+   private InvoiceService invoiceService;
+
     public InvoiceManagement() {
         initComponents();
+        setLocationRelativeTo(null);
+        connectToServer();
+        loadAllInvoices();
     }
+
+    private void connectToServer() {
+        try {
+            Registry registry = LocateRegistry.getRegistry("127.0.0.1", 3000);
+            invoiceService = (InvoiceService) registry.lookup("invoice");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Cannot connect to server: " + e.getMessage(),
+                "Connection Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void loadAllInvoices() {
+    try {
+        List<Invoice> invoices = invoiceService.getAllInvoices();
+        DefaultTableModel model = new DefaultTableModel(
+            new String[]{"ID", "Invoice #", "SME", "Amount", 
+                         "Issue Date", "Due Date", "Status"}, 0
+        );
+        for (Invoice inv : invoices) {
+            model.addRow(new Object[]{
+                inv.getInvoiceId(),
+                inv.getInvoiceNumber(),
+                inv.getSme() != null ? inv.getSme().getBusinessName() : "",
+                inv.getAmount(),
+                inv.getIssueDate(),
+                inv.getDueDate(),
+                inv.getStatus()
+            });
+        }
+        invoicesTable.setModel(model);
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Error loading invoices: " + e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -31,15 +80,15 @@ public class InvoiceManagement extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        jTextField2 = new javax.swing.JTextField();
-        jButton5 = new javax.swing.JButton();
+        verifyBtn = new javax.swing.JButton();
+        markAsFundedBtn = new javax.swing.JButton();
+        markAsRepaidBtn = new javax.swing.JButton();
+        deleteBtn = new javax.swing.JToggleButton();
+        searchInvoiceTxt = new javax.swing.JTextField();
+        searchInvoiceBtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        invoicesTable = new javax.swing.JTable();
+        statusCombo = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -72,29 +121,54 @@ public class InvoiceManagement extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jButton2.setBackground(new java.awt.Color(29, 95, 165));
-        jButton2.setText("Verify Selected");
-
-        jButton3.setText("Mark As Funded");
-
-        jButton4.setText("Mark As Repaid");
-
-        jToggleButton1.setText("Delete");
-
-        jTextField2.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
-        jTextField2.setForeground(new java.awt.Color(100, 100, 100));
-        jTextField2.setText("Search By Invoice Number");
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+        verifyBtn.setBackground(new java.awt.Color(29, 95, 165));
+        verifyBtn.setText("Verify Selected");
+        verifyBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+                verifyBtnActionPerformed(evt);
             }
         });
 
-        jButton5.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
-        jButton5.setText("Search");
+        markAsFundedBtn.setText("Mark As Funded");
+        markAsFundedBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                markAsFundedBtnActionPerformed(evt);
+            }
+        });
 
-        jTable1.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        markAsRepaidBtn.setText("Mark As Repaid");
+        markAsRepaidBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                markAsRepaidBtnActionPerformed(evt);
+            }
+        });
+
+        deleteBtn.setText("Delete");
+        deleteBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteBtnActionPerformed(evt);
+            }
+        });
+
+        searchInvoiceTxt.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        searchInvoiceTxt.setForeground(new java.awt.Color(100, 100, 100));
+        searchInvoiceTxt.setText("Search By Invoice Number");
+        searchInvoiceTxt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchInvoiceTxtActionPerformed(evt);
+            }
+        });
+
+        searchInvoiceBtn.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        searchInvoiceBtn.setText("Search");
+        searchInvoiceBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchInvoiceBtnActionPerformed(evt);
+            }
+        });
+
+        invoicesTable.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        invoicesTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null},
@@ -105,10 +179,10 @@ public class InvoiceManagement extends javax.swing.JFrame {
                 "ID", "Invoice", "SME", "Amount", "Issue Date", "Due Date", "Status"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(invoicesTable);
 
-        jComboBox2.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All Status", "Pending", "Verified", "Funded", "Rejected" }));
+        statusCombo.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        statusCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All Status", "Pending", "Verified", "Funded", "Rejected" }));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -124,20 +198,20 @@ public class InvoiceManagement extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jButton2)
+                                .addComponent(verifyBtn)
                                 .addGap(47, 47, 47)
-                                .addComponent(jButton3)
+                                .addComponent(markAsFundedBtn)
                                 .addGap(46, 46, 46)
-                                .addComponent(jButton4)
+                                .addComponent(markAsRepaidBtn)
                                 .addGap(36, 36, 36)
-                                .addComponent(jToggleButton1))
+                                .addComponent(deleteBtn))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(291, 291, 291)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(searchInvoiceTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton5)
+                                .addComponent(searchInvoiceBtn)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(statusCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -146,15 +220,15 @@ public class InvoiceManagement extends javax.swing.JFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton5)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(searchInvoiceTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchInvoiceBtn)
+                    .addComponent(statusCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(36, 36, 36)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4)
-                    .addComponent(jToggleButton1))
+                    .addComponent(verifyBtn)
+                    .addComponent(markAsFundedBtn)
+                    .addComponent(markAsRepaidBtn)
+                    .addComponent(deleteBtn))
                 .addGap(36, 36, 36)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 123, Short.MAX_VALUE))
@@ -176,9 +250,196 @@ public class InvoiceManagement extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void searchInvoiceTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchInvoiceTxtActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_searchInvoiceTxtActionPerformed
+
+    private void verifyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verifyBtnActionPerformed
+        try {
+        int selectedRow = invoicesTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select an invoice to verify",
+                "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String currentStatus = invoicesTable.getValueAt(
+            selectedRow, 6).toString();
+
+        // Business rule — only SUBMITTED invoices can be verified
+        if (!currentStatus.equals("SUBMITTED")) {
+            JOptionPane.showMessageDialog(this,
+                "Only SUBMITTED invoices can be verified. " +
+                "Current status: " + currentStatus,
+                "Business Rule Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int invoiceId = (int) invoicesTable.getValueAt(selectedRow, 0);
+        Invoice invoice = new Invoice();
+        invoice.setInvoiceId(invoiceId);
+        invoice.setStatus("VERIFIED");
+
+        String result = invoiceService.updateInvoice(invoice);
+        JOptionPane.showMessageDialog(this,
+            "Invoice verified successfully",
+            "Success", JOptionPane.INFORMATION_MESSAGE);
+        loadAllInvoices();
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Error: " + e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_verifyBtnActionPerformed
+
+    private void markAsFundedBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_markAsFundedBtnActionPerformed
+        try {
+        int selectedRow = invoicesTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select an invoice",
+                "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String currentStatus = invoicesTable.getValueAt(
+            selectedRow, 6).toString();
+
+        // Business rule — only VERIFIED invoices can be funded
+        if (!currentStatus.equals("VERIFIED")) {
+            JOptionPane.showMessageDialog(this,
+                "Only VERIFIED invoices can be marked as funded",
+                "Business Rule Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int invoiceId = (int) invoicesTable.getValueAt(selectedRow, 0);
+        Invoice invoice = new Invoice();
+        invoice.setInvoiceId(invoiceId);
+        invoice.setStatus("FUNDED");
+
+        invoiceService.updateInvoice(invoice);
+        JOptionPane.showMessageDialog(this,
+            "Invoice marked as funded",
+            "Success", JOptionPane.INFORMATION_MESSAGE);
+        loadAllInvoices();
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Error: " + e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_markAsFundedBtnActionPerformed
+
+    private void markAsRepaidBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_markAsRepaidBtnActionPerformed
+        try {
+        int selectedRow = invoicesTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select an invoice",
+                "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String currentStatus = invoicesTable.getValueAt(
+            selectedRow, 6).toString();
+
+        // Business rule — only FUNDED invoices can be repaid
+        if (!currentStatus.equals("FUNDED")) {
+            JOptionPane.showMessageDialog(this,
+                "Only FUNDED invoices can be marked as repaid",
+                "Business Rule Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int invoiceId = (int) invoicesTable.getValueAt(selectedRow, 0);
+        Invoice invoice = new Invoice();
+        invoice.setInvoiceId(invoiceId);
+        invoice.setStatus("REPAID");
+
+        invoiceService.updateInvoice(invoice);
+        JOptionPane.showMessageDialog(this,
+            "Invoice marked as repaid",
+            "Success", JOptionPane.INFORMATION_MESSAGE);
+        loadAllInvoices();
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Error: " + e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_markAsRepaidBtnActionPerformed
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        try {
+        int selectedRow = invoicesTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select an invoice to delete",
+                "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to delete this invoice?",
+            "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) return;
+
+        int invoiceId = (int) invoicesTable.getValueAt(selectedRow, 0);
+        Invoice invoice = new Invoice();
+        invoice.setInvoiceId(invoiceId);
+
+        invoiceService.deleteInvoice(invoice);
+        JOptionPane.showMessageDialog(this,
+            "Invoice deleted successfully",
+            "Success", JOptionPane.INFORMATION_MESSAGE);
+        loadAllInvoices();
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Error: " + e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_deleteBtnActionPerformed
+
+    private void searchInvoiceBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchInvoiceBtnActionPerformed
+        try {
+        if (searchInvoiceTxt.getText().trim().isEmpty()) {
+            loadAllInvoices();
+            return;
+        }
+
+        String searchTerm = searchInvoiceTxt.getText().trim().toLowerCase();
+        DefaultTableModel model = (DefaultTableModel) invoicesTable.getModel();
+        DefaultTableModel filteredModel = new DefaultTableModel(
+            new String[]{"ID", "Invoice #", "SME", "Amount",
+                         "Issue Date", "Due Date", "Status"}, 0
+        );
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String invoiceNum = model.getValueAt(i, 1).toString().toLowerCase();
+            if (invoiceNum.contains(searchTerm)) {
+                filteredModel.addRow(new Object[]{
+                    model.getValueAt(i, 0),
+                    model.getValueAt(i, 1),
+                    model.getValueAt(i, 2),
+                    model.getValueAt(i, 3),
+                    model.getValueAt(i, 4),
+                    model.getValueAt(i, 5),
+                    model.getValueAt(i, 6)
+                });
+            }
+        }
+        invoicesTable.setModel(filteredModel);
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Error: " + e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_searchInvoiceBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -217,18 +478,18 @@ public class InvoiceManagement extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton deleteBtn;
+    private javax.swing.JTable invoicesTable;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JToggleButton jToggleButton1;
+    private javax.swing.JButton markAsFundedBtn;
+    private javax.swing.JButton markAsRepaidBtn;
+    private javax.swing.JButton searchInvoiceBtn;
+    private javax.swing.JTextField searchInvoiceTxt;
+    private javax.swing.JComboBox<String> statusCombo;
+    private javax.swing.JButton verifyBtn;
     // End of variables declaration//GEN-END:variables
 }
