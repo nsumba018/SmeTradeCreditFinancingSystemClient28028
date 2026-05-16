@@ -47,7 +47,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         manageUsers = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
+        manageInvoices = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
@@ -166,11 +166,11 @@ public class AdminDashboard extends javax.swing.JFrame {
             }
         });
 
-        jButton6.setFont(new java.awt.Font("DejaVu Sans", 0, 15)); // NOI18N
-        jButton6.setText("View Invoices");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        manageInvoices.setFont(new java.awt.Font("DejaVu Sans", 0, 15)); // NOI18N
+        manageInvoices.setText("View Invoices");
+        manageInvoices.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                manageInvoicesActionPerformed(evt);
             }
         });
 
@@ -195,7 +195,7 @@ public class AdminDashboard extends javax.swing.JFrame {
                         .addComponent(jButton8))
                     .addComponent(jButton2)
                     .addComponent(manageUsers)
-                    .addComponent(jButton6))
+                    .addComponent(manageInvoices))
                 .addContainerGap(26, Short.MAX_VALUE))
         );
         panelLayout.setVerticalGroup(
@@ -206,7 +206,7 @@ public class AdminDashboard extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(manageUsers)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton6)
+                .addComponent(manageInvoices)
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
@@ -427,9 +427,9 @@ public class AdminDashboard extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton6ActionPerformed
+    private void manageInvoicesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageInvoicesActionPerformed
+        new InvoiceManagement().setVisible(true);
+    }//GEN-LAST:event_manageInvoicesActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
@@ -477,7 +477,6 @@ public class AdminDashboard extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton8;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -505,6 +504,7 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
+    private javax.swing.JButton manageInvoices;
     private javax.swing.JButton manageUsers;
     private javax.swing.JPanel panel;
     private javax.swing.JLabel welcomeLabel;

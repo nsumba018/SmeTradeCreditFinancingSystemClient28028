@@ -83,7 +83,7 @@ public class UserManagement extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        backToDashboard = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -108,8 +108,13 @@ public class UserManagement extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 18)); // NOI18N
         jLabel1.setText("Manage Users");
 
-        jButton1.setFont(new java.awt.Font("DejaVu Sans", 0, 15)); // NOI18N
-        jButton1.setText("Back to Dashboard");
+        backToDashboard.setFont(new java.awt.Font("DejaVu Sans", 0, 15)); // NOI18N
+        backToDashboard.setText("Back to Dashboard");
+        backToDashboard.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backToDashboardActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -119,7 +124,7 @@ public class UserManagement extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(backToDashboard)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -128,7 +133,7 @@ public class UserManagement extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jButton1))
+                    .addComponent(backToDashboard))
                 .addContainerGap())
         );
 
@@ -501,6 +506,10 @@ public class UserManagement extends javax.swing.JFrame {
             "Error", JOptionPane.ERROR_MESSAGE);
     }
     }//GEN-LAST:event_searchByIdBtnActionPerformed
+
+    private void backToDashboardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backToDashboardActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_backToDashboardActionPerformed
     private void clearFields() {
     usernameManageUser.setText("");
     passwordManageUser.setText("");
@@ -544,9 +553,9 @@ public class UserManagement extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton backToDashboard;
     private javax.swing.JButton deleteUserBtn;
     private javax.swing.JTextField emailManageUser;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

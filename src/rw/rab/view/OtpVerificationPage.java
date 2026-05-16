@@ -227,7 +227,7 @@ public class OtpVerificationPage extends javax.swing.JFrame {
             
             String result = userService.verifyOtp(loggedInUser, enteredOtp);
             
-            if(result.equals("Success")){
+            if(result.equals("SUCCESS")){
                 JOptionPane.showMessageDialog(this, "Login Successful", "Welcome", JOptionPane.INFORMATION_MESSAGE);
                 //open dashboard based on the user
                 
