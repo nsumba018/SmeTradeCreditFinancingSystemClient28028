@@ -167,7 +167,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         });
 
         manageInvoicesBtn.setFont(new java.awt.Font("DejaVu Sans", 0, 15)); // NOI18N
-        manageInvoicesBtn.setText("View Invoices");
+        manageInvoicesBtn.setText("Manage Invoices");
         manageInvoicesBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 manageInvoicesBtnActionPerformed(evt);

@@ -47,10 +47,8 @@ public class SmeDashboard extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        myInvoicesBtn = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
@@ -160,11 +158,13 @@ public class SmeDashboard extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setFont(new java.awt.Font("DejaVu Sans", 0, 15)); // NOI18N
-        jButton3.setText("My invoices");
-
-        jButton4.setFont(new java.awt.Font("DejaVu Sans", 0, 15)); // NOI18N
-        jButton4.setText("Submit Invoice");
+        myInvoicesBtn.setFont(new java.awt.Font("DejaVu Sans", 0, 15)); // NOI18N
+        myInvoicesBtn.setText("My invoices");
+        myInvoicesBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myInvoicesBtnActionPerformed(evt);
+            }
+        });
 
         jButton6.setFont(new java.awt.Font("DejaVu Sans", 0, 15)); // NOI18N
         jButton6.setText("Export Reports");
@@ -173,9 +173,6 @@ public class SmeDashboard extends javax.swing.JFrame {
                 jButton6ActionPerformed(evt);
             }
         });
-
-        jButton7.setFont(new java.awt.Font("DejaVu Sans", 0, 15)); // NOI18N
-        jButton7.setText("My Fundings");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -186,13 +183,11 @@ public class SmeDashboard extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton7))
+                        .addGap(0, 0, 0)
+                        .addComponent(jButton6))
                     .addComponent(jButton2)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4)
-                    .addComponent(jButton6))
-                .addContainerGap(46, Short.MAX_VALUE))
+                    .addComponent(myInvoicesBtn))
+                .addContainerGap(58, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -200,19 +195,12 @@ public class SmeDashboard extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jButton2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3)
+                .addComponent(myInvoicesBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton4)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                        .addComponent(jLabel3)
-                        .addGap(19, 19, 19))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton7)))
                 .addComponent(jButton6)
-                .addGap(183, 183, 183))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addComponent(jLabel3)
+                .addGap(230, 230, 230))
         );
 
         jTable2.setFont(new java.awt.Font("DejaVu Sans", 0, 15)); // NOI18N
@@ -393,14 +381,13 @@ public class SmeDashboard extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 427, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 50, Short.MAX_VALUE))
+                .addGap(0, 26, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -427,6 +414,11 @@ public class SmeDashboard extends javax.swing.JFrame {
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void myInvoicesBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myInvoicesBtnActionPerformed
+            new MyInvoices(loggedInUser).setVisible(true);
+
+    }//GEN-LAST:event_myInvoicesBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -467,10 +459,7 @@ public class SmeDashboard extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -498,6 +487,7 @@ public class SmeDashboard extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
+    private javax.swing.JButton myInvoicesBtn;
     private javax.swing.JLabel welcomeLabel;
     // End of variables declaration//GEN-END:variables
 }

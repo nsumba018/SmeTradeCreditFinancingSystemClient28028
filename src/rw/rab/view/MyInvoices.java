@@ -5,18 +5,81 @@
  */
 package rw.rab.view;
 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import rw.rab.model.Invoice;
+import rw.rab.model.Sme;
+import rw.rab.service.InvoiceService;
+import rw.rab.service.SmeService;
+
 /**
  *
  * @author nsumba
  */
 public class MyInvoices extends javax.swing.JFrame {
+    private InvoiceService invoiceService;
+    private SmeService smeService;
+    private rw.rab.model.User loggedInUser;
 
-    /**
-     * Creates new form UserManagement
-     */
-    public MyInvoices() {
+    public MyInvoices(rw.rab.model.User user) {
         initComponents();
+        this.loggedInUser = user;
+        setLocationRelativeTo(null);
+        connectToServer();
+        loadMyInvoices();
+        invoicesTable.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            int row = invoicesTable.getSelectedRow();
+            invoiceNoTxt.setText(invoicesTable.getValueAt(row, 1).toString());
+            amountTxt.setText(invoicesTable.getValueAt(row, 2).toString());
     }
+});
+    }
+
+    private void connectToServer() {
+        try {
+            Registry registry = LocateRegistry.getRegistry("127.0.0.1", 3000);
+            invoiceService = (InvoiceService) registry.lookup("invoice");
+            smeService = (SmeService) registry.lookup("sme");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Cannot connect to server: " + e.getMessage(),
+                "Connection Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void loadMyInvoices() {
+        try {
+            List<Invoice> invoices = invoiceService.getAllInvoices();
+            DefaultTableModel model = new DefaultTableModel(
+                new String[]{"ID", "Invoice #", "Amount", 
+                             "Issue Date", "Due Date", "Status"}, 0
+            );
+            for (Invoice inv : invoices) {
+                // Only show invoices belonging to this SME user
+                if (inv.getSme() != null && 
+                    inv.getSme().getUser() != null &&
+                    inv.getSme().getUser().getUserId() == loggedInUser.getUserId()) {
+                    model.addRow(new Object[]{
+                        inv.getInvoiceId(),
+                        inv.getInvoiceNumber(),
+                        inv.getAmount(),
+                        inv.getIssueDate(),
+                        inv.getDueDate(),
+                        inv.getStatus()
+                    });
+                }
+            }
+            invoicesTable.setModel(model);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Error loading invoices: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -35,18 +98,18 @@ public class MyInvoices extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jPasswordField1 = new javax.swing.JPasswordField();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        jTextField2 = new javax.swing.JTextField();
-        jButton5 = new javax.swing.JButton();
+        invoiceNoTxt = new javax.swing.JTextField();
+        registerBtn = new javax.swing.JButton();
+        updateBtn = new javax.swing.JButton();
+        deleteBtn = new javax.swing.JButton();
+        readAllBtn = new javax.swing.JToggleButton();
+        searchField = new javax.swing.JTextField();
+        searchByIdBtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
-        jDateChooser2 = new com.toedter.calendar.JDateChooser();
+        invoicesTable = new javax.swing.JTable();
+        issuedDate = new com.toedter.calendar.JDateChooser();
+        dueDate = new com.toedter.calendar.JDateChooser();
+        amountTxt = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -91,41 +154,63 @@ public class MyInvoices extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("DejaVu Sans", 0, 15)); // NOI18N
         jLabel5.setText("Due Date");
 
-        jTextField1.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
-        jTextField1.setForeground(new java.awt.Color(100, 100, 100));
-        jTextField1.setText("username");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        invoiceNoTxt.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        invoiceNoTxt.setForeground(new java.awt.Color(100, 100, 100));
+        invoiceNoTxt.setText("username");
+        invoiceNoTxt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                invoiceNoTxtActionPerformed(evt);
             }
         });
 
-        jPasswordField1.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
-        jPasswordField1.setText("jPasswordField1");
-
-        jButton2.setBackground(new java.awt.Color(29, 95, 165));
-        jButton2.setText("Register");
-
-        jButton3.setText("Update");
-
-        jButton4.setText("Delete");
-
-        jToggleButton1.setText("Read All");
-
-        jTextField2.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
-        jTextField2.setForeground(new java.awt.Color(100, 100, 100));
-        jTextField2.setText("Search By ID");
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+        registerBtn.setBackground(new java.awt.Color(29, 95, 165));
+        registerBtn.setText("Register");
+        registerBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+                registerBtnActionPerformed(evt);
             }
         });
 
-        jButton5.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
-        jButton5.setText("Search");
+        updateBtn.setText("Update");
+        updateBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updateBtnActionPerformed(evt);
+            }
+        });
 
-        jTable1.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        deleteBtn.setText("Delete");
+        deleteBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteBtnActionPerformed(evt);
+            }
+        });
+
+        readAllBtn.setText("Read All");
+        readAllBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                readAllBtnActionPerformed(evt);
+            }
+        });
+
+        searchField.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        searchField.setForeground(new java.awt.Color(100, 100, 100));
+        searchField.setText("Search By ID");
+        searchField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchFieldActionPerformed(evt);
+            }
+        });
+
+        searchByIdBtn.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        searchByIdBtn.setText("Search");
+        searchByIdBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchByIdBtnActionPerformed(evt);
+            }
+        });
+
+        invoicesTable.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        invoicesTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
                 {null, null, null, null, null, null},
@@ -136,7 +221,10 @@ public class MyInvoices extends javax.swing.JFrame {
                 "ID", "Invoice #", "Amount", "Issue Date", "Due Date", "Status"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(invoicesTable);
+
+        amountTxt.setForeground(new java.awt.Color(100, 100, 100));
+        amountTxt.setText("Amount");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -152,32 +240,32 @@ public class MyInvoices extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(invoiceNoTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(32, 32, 32)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
-                            .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(amountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(28, 28, 28)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
-                            .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(issuedDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5)
-                            .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(dueDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(19, 19, 19))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton2)
+                        .addComponent(registerBtn)
                         .addGap(47, 47, 47)
-                        .addComponent(jButton3)
+                        .addComponent(updateBtn)
                         .addGap(46, 46, 46)
-                        .addComponent(jButton4)
+                        .addComponent(deleteBtn)
                         .addGap(36, 36, 36)
-                        .addComponent(jToggleButton1)
+                        .addComponent(readAllBtn)
                         .addGap(68, 68, 68)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton5)
+                        .addComponent(searchByIdBtn)
                         .addGap(0, 12, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -193,18 +281,18 @@ public class MyInvoices extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(invoiceNoTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(amountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(issuedDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dueDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4)
-                    .addComponent(jToggleButton1)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton5))
+                    .addComponent(registerBtn)
+                    .addComponent(updateBtn)
+                    .addComponent(deleteBtn)
+                    .addComponent(readAllBtn)
+                    .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchByIdBtn))
                 .addGap(33, 33, 33)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 123, Short.MAX_VALUE))
@@ -226,14 +314,249 @@ public class MyInvoices extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void invoiceNoTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_invoiceNoTxtActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_invoiceNoTxtActionPerformed
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_searchFieldActionPerformed
 
+    private void registerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerBtnActionPerformed
+        try {
+        // Technical rule 1 — empty fields
+        if (invoiceNoTxt.getText().trim().isEmpty() ||
+            amountTxt.getText().trim().isEmpty() ||
+            issuedDate.getDate() == null ||
+            dueDate.getDate() == null) {
+            JOptionPane.showMessageDialog(this,
+                "All fields are required",
+                "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Technical rule 2 — amount must be numeric
+        double amount;
+        try {
+            amount = Double.parseDouble(amountTxt.getText().trim());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this,
+                "Amount must be a valid number",
+                "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Business rule 1 — amount must be positive
+        if (amount <= 0) {
+            JOptionPane.showMessageDialog(this,
+                "Invoice amount must be greater than zero",
+                "Business Rule Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Business rule 2 — due date must be after issue date
+        java.text.SimpleDateFormat sdf = 
+            new java.text.SimpleDateFormat("yyyy-MM-dd");
+                // New — JDateChooser direct date reading
+        java.util.Date issue = issuedDate.getDate();
+        java.util.Date due = dueDate.getDate();
+
+        if (issue == null || due == null) {
+            JOptionPane.showMessageDialog(this,
+                "Please select both issue date and due date",
+                "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        };
+
+        if (due.before(issue)) {
+            JOptionPane.showMessageDialog(this,
+                "Due date must be after issue date",
+                "Business Rule Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Get SME linked to this logged in user
+        Sme mySme = smeService.getSmeByUserId(loggedInUser);
+
+        if (mySme == null) {
+            JOptionPane.showMessageDialog(this,
+                "No SME profile found for this account. " +
+                "Please contact admin.",
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Invoice invoice = new Invoice();
+        invoice.setInvoiceNumber(invoiceNoTxt.getText().trim());
+        invoice.setAmount(amount);
+        invoice.setIssueDate(issue);
+        invoice.setDueDate(due);
+        invoice.setStatus("SUBMITTED");
+        invoice.setSme(mySme);
+
+        String result = invoiceService.createInvoice(invoice);
+        JOptionPane.showMessageDialog(this,
+            result, "Success", JOptionPane.INFORMATION_MESSAGE);
+        loadMyInvoices();
+        clearFields();
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Error: " + e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_registerBtnActionPerformed
+
+    private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
+        try {
+        int selectedRow = invoicesTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select an invoice to update",
+                "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Business rule — cannot update if not SUBMITTED
+        String status = invoicesTable.getValueAt(
+            selectedRow, 5).toString();
+        if (!status.equals("SUBMITTED")) {
+            JOptionPane.showMessageDialog(this,
+                "Only SUBMITTED invoices can be updated",
+                "Business Rule Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Technical rule — empty fields
+        if (invoiceNoTxt.getText().trim().isEmpty() ||
+            amountTxt.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Invoice number and amount are required",
+                "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int invoiceId = (int) invoicesTable.getValueAt(selectedRow, 0);
+        java.text.SimpleDateFormat sdf = 
+            new java.text.SimpleDateFormat("yyyy-MM-dd");
+
+        Invoice invoice = new Invoice();
+        invoice.setInvoiceId(invoiceId);
+        invoice.setInvoiceNumber(invoiceNoTxt.getText().trim());
+        invoice.setAmount(Double.parseDouble(amountTxt.getText().trim()));
+        // New — JDateChooser direct date reading
+        java.util.Date issue = issuedDate.getDate();
+        java.util.Date due = dueDate.getDate();
+
+        if (issue == null || due == null) {
+            JOptionPane.showMessageDialog(this,
+                "Please select both issue date and due date",
+                "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        };
+        invoice.setStatus("SUBMITTED");
+
+        String result = invoiceService.updateInvoice(invoice);
+        JOptionPane.showMessageDialog(this,
+            result, "Success", JOptionPane.INFORMATION_MESSAGE);
+        loadMyInvoices();
+        clearFields();
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Error: " + e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_updateBtnActionPerformed
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        try {
+        int selectedRow = invoicesTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select an invoice to delete",
+                "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Business rule — cannot delete funded or repaid invoice
+        String status = invoicesTable.getValueAt(
+            selectedRow, 5).toString();
+        if (status.equals("FUNDED") || status.equals("REPAID")) {
+            JOptionPane.showMessageDialog(this,
+                "Cannot delete a " + status + " invoice",
+                "Business Rule Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to delete this invoice?",
+            "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) return;
+
+        int invoiceId = (int) invoicesTable.getValueAt(selectedRow, 0);
+        Invoice invoice = new Invoice();
+        invoice.setInvoiceId(invoiceId);
+
+        invoiceService.deleteInvoice(invoice);
+        JOptionPane.showMessageDialog(this,
+            "Invoice deleted successfully",
+            "Success", JOptionPane.INFORMATION_MESSAGE);
+        loadMyInvoices();
+        clearFields();
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Error: " + e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_deleteBtnActionPerformed
+
+    private void readAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readAllBtnActionPerformed
+        loadMyInvoices();
+    }//GEN-LAST:event_readAllBtnActionPerformed
+
+    private void searchByIdBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchByIdBtnActionPerformed
+        try {
+        if (searchField.getText().trim().isEmpty()) {
+            loadMyInvoices();
+            return;
+        }
+        String term = searchField.getText().trim().toLowerCase();
+        DefaultTableModel model = (DefaultTableModel) invoicesTable.getModel();
+        DefaultTableModel filtered = new DefaultTableModel(
+            new String[]{"ID", "Invoice #", "Amount",
+                         "Issue Date", "Due Date", "Status"}, 0
+        );
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if (model.getValueAt(i, 1).toString()
+                    .toLowerCase().contains(term)) {
+                filtered.addRow(new Object[]{
+                    model.getValueAt(i, 0),
+                    model.getValueAt(i, 1),
+                    model.getValueAt(i, 2),
+                    model.getValueAt(i, 3),
+                    model.getValueAt(i, 4),
+                    model.getValueAt(i, 5)
+                });
+            }
+        }
+        invoicesTable.setModel(filtered);
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Error: " + e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_searchByIdBtnActionPerformed
+
+    private void clearFields() {
+    invoiceNoTxt.setText("");
+    amountTxt.setText("");
+    issuedDate.setDate(null);   // JDateChooser reset
+    dueDate.setDate(null);   
+    searchField.setText("");
+}
+    
     /**
      * @param args the command line arguments
      */
@@ -265,19 +588,19 @@ public class MyInvoices extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MyInvoices().setVisible(true);
+                new MyInvoices(new rw.rab.model.User()).setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField amountTxt;
+    private javax.swing.JButton deleteBtn;
+    private com.toedter.calendar.JDateChooser dueDate;
+    private javax.swing.JTextField invoiceNoTxt;
+    private javax.swing.JTable invoicesTable;
+    private com.toedter.calendar.JDateChooser issuedDate;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
-    private com.toedter.calendar.JDateChooser jDateChooser2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -285,11 +608,11 @@ public class MyInvoices extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JToggleButton jToggleButton1;
+    private javax.swing.JToggleButton readAllBtn;
+    private javax.swing.JButton registerBtn;
+    private javax.swing.JButton searchByIdBtn;
+    private javax.swing.JTextField searchField;
+    private javax.swing.JButton updateBtn;
     // End of variables declaration//GEN-END:variables
 }

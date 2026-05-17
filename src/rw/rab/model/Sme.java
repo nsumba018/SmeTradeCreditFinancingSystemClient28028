@@ -68,6 +68,10 @@ public class Sme implements Serializable{
     public void setCreditLimit(double creditLimit) {
         this.creditLimit = creditLimit;
     }
+    private User user;
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
     
     
 }
