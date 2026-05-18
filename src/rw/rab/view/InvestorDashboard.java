@@ -31,6 +31,12 @@ public class InvestorDashboard extends javax.swing.JFrame {
                 new ReportsPage(loggedInUser).setVisible(true);
             }
         });
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                new LoginPage().setVisible(true);
+                dispose();
+            }
+        });
         connectToServer();
         loadDashboardStats();
     }

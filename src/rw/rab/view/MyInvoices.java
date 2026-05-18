@@ -31,12 +31,17 @@ public class MyInvoices extends javax.swing.JFrame {
         connectToServer();
         loadMyInvoices();
         invoicesTable.addMouseListener(new java.awt.event.MouseAdapter() {
-        public void mouseClicked(java.awt.event.MouseEvent evt) {
-            int row = invoicesTable.getSelectedRow();
-            invoiceNoTxt.setText(invoicesTable.getValueAt(row, 1).toString());
-            amountTxt.setText(invoicesTable.getValueAt(row, 2).toString());
-    }
-});
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int row = invoicesTable.getSelectedRow();
+                invoiceNoTxt.setText(invoicesTable.getValueAt(row, 1).toString());
+                amountTxt.setText(invoicesTable.getValueAt(row, 2).toString());
+            }
+        });
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dispose();
+            }
+        });
     }
 
     private void connectToServer() {
@@ -58,9 +63,9 @@ public class MyInvoices extends javax.swing.JFrame {
                 new String[]{"ID", "Invoice #", "Amount", 
                              "Issue Date", "Due Date", "Status"}, 0
             );
-            for (Invoice inv : invoices) {
-                // Only show invoices belonging to this SME user
-                if (inv.getSme() != null && 
+            for (int i = 0; i < invoices.size(); i++) {
+                Invoice inv = invoices.get(i);
+                if (inv.getSme() != null &&
                     inv.getSme().getUser() != null &&
                     inv.getSme().getUser().getUserId() == loggedInUser.getUserId()) {
                     model.addRow(new Object[]{

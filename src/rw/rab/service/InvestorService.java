@@ -20,4 +20,5 @@ public interface InvestorService extends Remote{
     public String deleteInvestor(Investor investor) throws RemoteException;
     public List<Investor> getAllInvestors() throws RemoteException;
     public Investor getInvestorById(Investor investor) throws RemoteException;
+    public Investor getInvestorByUserId(rw.rab.model.User user) throws RemoteException;
 }

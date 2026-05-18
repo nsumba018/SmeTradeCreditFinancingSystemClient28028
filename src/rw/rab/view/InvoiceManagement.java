@@ -34,6 +34,11 @@ public class InvoiceManagement extends javax.swing.JFrame {
                 statusComboActionPerformed(evt);
             }
         });
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dispose();
+            }
+        });
     }
 
     private void connectToServer() {

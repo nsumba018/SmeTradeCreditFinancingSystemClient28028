@@ -29,6 +29,12 @@ public class AdminDashboard extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         connectToServer();
         loadDashboardStats();
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                new LoginPage().setVisible(true);
+                dispose();
+            }
+        });
     }
 
     /**

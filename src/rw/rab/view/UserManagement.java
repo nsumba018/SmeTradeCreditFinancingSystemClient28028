@@ -31,10 +31,15 @@ public class UserManagement extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 int row = usersTable.getSelectedRow();
                 usernameManageUser.setText(usersTable.getValueAt(row, 1).toString());
-                emailManageUser.setText(usersTable.getValueAt(row, 3).toString());
+                emailManageUser.setText(usersTable.getValueAt(row, 2).toString());
                 roleManageUserCombo.setSelectedItem(usersTable.getValueAt(row, 3).toString());
-    }
-});
+            }
+        });
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dispose();
+            }
+        });
     }
     
     private void connectToServer(){
@@ -54,7 +59,8 @@ public class UserManagement extends javax.swing.JFrame {
             new String[]{"ID", "Username", "Email", "Role"},0
             );
             
-            for (User u: users){
+            for (int i = 0; i < users.size(); i++) {
+                User u = users.get(i);
                 model.addRow(new Object[]{
                     u.getUserId(),
                     u.getUsername(),

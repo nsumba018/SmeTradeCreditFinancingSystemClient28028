@@ -20,4 +20,5 @@ public interface FundingService extends Remote{
     public String deleteFunding(Funding funding) throws RemoteException;
     public List<Funding> getAllFundings() throws RemoteException;
     public Funding getFundingById(Funding funding) throws RemoteException;
+    public List<Funding> getFundingsByInvestorId(rw.rab.model.Investor investor) throws RemoteException;
 }
