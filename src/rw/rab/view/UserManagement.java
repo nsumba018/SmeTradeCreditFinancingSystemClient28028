@@ -35,7 +35,7 @@ public class UserManagement extends javax.swing.JFrame {
                 roleManageUserCombo.setSelectedItem(usersTable.getValueAt(row, 3).toString());
             }
         });
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        backToDashboard.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dispose();
             }

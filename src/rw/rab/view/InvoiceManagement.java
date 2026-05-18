@@ -193,7 +193,7 @@ public class InvoiceManagement extends javax.swing.JFrame {
         jScrollPane1.setViewportView(invoicesTable);
 
         statusCombo.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
-        statusCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All Status", "Pending", "Verified", "Funded", "Rejected" }));
+        statusCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ALL STATUS", "SUBMITTED", "VERIFIED", "FUNDED", "REPAID" }));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
